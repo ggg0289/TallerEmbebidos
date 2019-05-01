@@ -1,7 +1,8 @@
 #include<stdio.h>
 #include<conio.h>
 #include<pthread.h>
-#include <semaphore.h>
+#include<semaphore.h>
+#include<time.h>
 #include<graphics.h>
 
 /*
@@ -18,23 +19,22 @@ Animación basada en:
 https://c.happycodings.com/beginners-lab-assignments/code91.html
 */
 
-#define D 20        //Para los delays, cuando se necesite visualizar.
+#define D 100        //Para los delays, cuando se necesite visualizar.
 
 int N;              //Número de elementos a ordenar.
 int lista[100];     //Lista de elementos a ordenar.
-int tiempos[7];     //Tiempos de ejecución de cada algoritmo.
 
-sem_t mutex;            //Semáforo que actúa como mutex.
+sem_t mutex;        //Semáforo que actúa como mutex.
 
 void *menu(void *ID);
-void bubbleSort();
-void cocktailSort();
-void insertionSort();
-void bucketSort();
-void countingSort();
-void mergeSort();
-void binarythreeSort();
-void ordenamiento(int izq, int der, int listaOrd[]);
+void bubbleSort(int id);
+void cocktailSort(int id);
+void insertionSort(int id);
+void bucketSort(int id);
+void countingSort(int id);
+void mergeSort(int id);
+void binarythreeSort(int id);
+void ordenamiento(int izq, int der, int listaOrd[], int id, int dir);
 void objeto(int x, int y, int num);
 
 int main()
@@ -90,7 +90,7 @@ int main()
     }
 */
     //Usado para probar que los algoritmos sirven, uno por uno.
-    int v = 0;
+    int v = 2;
     hiloRetorno[v] = pthread_create(&hiloID[v], NULL, menu, &v);
     pthread_join(hiloID[v], NULL);
 
@@ -118,19 +118,19 @@ void *menu(void *ID)
     int *id = (int *)ID;
     switch (*id)
     {
-        case 0: bubbleSort();
+        case 0: bubbleSort(0);
                 break;
-        case 1: cocktailSort();
+        case 1: cocktailSort(1);
                 break;
-        case 2: insertionSort();
+        case 2: insertionSort(2);
                 break;
-        case 3: bucketSort();
+        case 3: bucketSort(3);
                 break;
-        case 4: countingSort();
+        case 4: countingSort(4);
                 break;
-        case 5: mergeSort();
+        case 5: mergeSort(5);
                 break;
-        case 6: binarythreeSort();
+        case 6: binarythreeSort(6);
                 break;
        default: settextstyle(0, 0, 2);
                 outtextxy(500, 500, (char *)"Este algoritmo no existe.");
@@ -138,17 +138,23 @@ void *menu(void *ID)
     }
 }
 
-void bubbleSort()
+void bubbleSort(int id)
 {
     int i,  j;          //Contadores.
     int temp;           //Para almacenamiento temporal.
     int listaOrd[N];    //Para ordenar la lista.
+    //Para medir el tiempo de ejecución.
+    clock_t cronometro;
+    double tiempo;
+    char T[8];
 
     for(i = 0; i < N; i++)
     {
         listaOrd[i] = lista[i];
         //objeto(325+i*50, 200, listaOrd[i]);
     }
+
+    cronometro = clock();   //Inicia el cronómetro.
 
     for(i = 1; i < N; i++)
     {
@@ -157,7 +163,7 @@ void bubbleSort()
             if(listaOrd[j] > listaOrd[j+1])
             {
                 //Para la parte gráfica.
-                ordenamiento(j, j+1, listaOrd);
+                ordenamiento(j, j+1, listaOrd, id, 0);
                 //Para la parte de arreglos.
                 temp = listaOrd[j];
                 listaOrd[j] = listaOrd[j+1];
@@ -165,51 +171,234 @@ void bubbleSort()
             }
         }
     }
+
+    //Detiene el cronómetro e imprime el tiempo.
+    cronometro = clock() - cronometro;
+    tiempo = ((double)cronometro)/CLOCKS_PER_SEC;
+    sprintf(T, "%0.2f s", tiempo);
+    settextstyle(0, 0, 2);
+    outtextxy(325+N*50, 200+id*50, T);
 }
 
-void cocktailSort()
+void cocktailSort(int id)
 {
+    int i,  j;          //Contadores.
+    int temp;           //Para almacenamiento temporal.
+    int sw;             //Para
+    int listaOrd[N];    //Para ordenar la lista.
+    //Para medir el tiempo de ejecución.
+    clock_t cronometro;
+    double tiempo;
+    char T[8];
+
+    for(i = 0; i < N; i++)
+    {
+        listaOrd[i] = lista[i];
+    }
+
+    cronometro = clock();   //Inicia el cronómetro.
+
+    sw = 1;
+    for(i = 0; i < N - 1 && sw == 1; i++)
+    {
+        sw = 0;
+        for(j = 0; j < N - 1 - i; j++)
+        {
+            //Bubble Sort de izquierda a derecha.
+            if(listaOrd[j] > listaOrd[j+1])
+            {
+                ordenamiento(j, j+1, listaOrd, id, 0);
+                temp = listaOrd[j+1];
+                listaOrd[j+1] = listaOrd[j];
+                listaOrd[j] = temp;
+                sw = 1;
+            }
+
+            //Bubble Sort de derecha a izquierda.
+            if(listaOrd[N-1-j] < listaOrd[N-2-j])
+            {
+                ordenamiento(N-2-j, N-1-j, listaOrd, id, 1);
+                temp = listaOrd[N-2-j];
+                listaOrd[N-2-j] = listaOrd[N-1-j];
+                listaOrd[N-1-j] = temp;
+                sw = 1;
+            }
+        }
+    }
+
+    //Detiene el cronómetro e imprime el tiempo.
+    cronometro = clock() - cronometro;
+    tiempo = ((double)cronometro)/CLOCKS_PER_SEC;
+    sprintf(T, "%0.2f s", tiempo);
+    settextstyle(0, 0, 2);
+    outtextxy(325+N*50, 200+id*50, T);
 }
 
-void insertionSort()
+void insertionSort(int id)
 {
+    int i,  j;          //Contadores.
+    int temp;           //Para almacenamiento temporal.
+    int listaOrd[N];    //Para ordenar la lista.
+    //Para medir el tiempo de ejecución.
+    clock_t cronometro;
+    double tiempo;
+    char T[8];
+
+    for(i = 0; i < N; i++)
+    {
+        listaOrd[i] = lista[i];
+    }
+
+    cronometro = clock();   //Inicia el cronómetro.
+
+    for (i = 1 ; i <= N - 1; i++)
+    {
+        j = i;
+
+        while (j > 0 && listaOrd[j] < listaOrd[j-1])
+        {
+            temp = listaOrd[j];
+            listaOrd[j] = listaOrd[j-1];
+            listaOrd[j-1] = temp;
+            j--;
+        }
+    }
+
+    //Detiene el cronómetro e imprime el tiempo.
+    cronometro = clock() - cronometro;
+    tiempo = ((double)cronometro)/CLOCKS_PER_SEC;
+    sprintf(T, "%0.2f s", tiempo);
+    settextstyle(0, 0, 2);
+    outtextxy(325+N*50, 200+id*50, T);
 }
 
-void bucketSort()
+void bucketSort(int id)
 {
+    int i,  j;          //Contadores.
+    int temp;           //Para almacenamiento temporal.
+    int listaOrd[N];    //Para ordenar la lista.
+    //Para medir el tiempo de ejecución.
+    clock_t cronometro;
+    double tiempo;
+    char T[8];
+
+    for(i = 0; i < N; i++)
+    {
+        listaOrd[i] = lista[i];
+    }
+
+    cronometro = clock();   //Inicia el cronómetro.
+
+    //ALGORITMO
+
+    //Detiene el cronómetro e imprime el tiempo.
+    cronometro = clock() - cronometro;
+    tiempo = ((double)cronometro)/CLOCKS_PER_SEC;
+    sprintf(T, "%0.2f s", tiempo);
+    settextstyle(0, 0, 2);
+    outtextxy(325+N*50, 200+id*50, T);
 }
 
-void countingSort()
+void countingSort(int id)
 {
+    int i,  j;          //Contadores.
+    int temp;           //Para almacenamiento temporal.
+    int listaOrd[N];    //Para ordenar la lista.
+    //Para medir el tiempo de ejecución.
+    clock_t cronometro;
+    double tiempo;
+    char T[8];
+
+    for(i = 0; i < N; i++)
+    {
+        listaOrd[i] = lista[i];
+    }
+
+    cronometro = clock();   //Inicia el cronómetro.
+
+    //ALGORITMO
+
+    //Detiene el cronómetro e imprime el tiempo.
+    cronometro = clock() - cronometro;
+    tiempo = ((double)cronometro)/CLOCKS_PER_SEC;
+    sprintf(T, "%0.2f s", tiempo);
+    settextstyle(0, 0, 2);
+    outtextxy(325+N*50, 200+id*50, T);
 }
 
-void mergeSort()
+void mergeSort(int id)
 {
+    int i,  j;          //Contadores.
+    int temp;           //Para almacenamiento temporal.
+    int listaOrd[N];    //Para ordenar la lista.
+    //Para medir el tiempo de ejecución.
+    clock_t cronometro;
+    double tiempo;
+    char T[8];
+
+    for(i = 0; i < N; i++)
+    {
+        listaOrd[i] = lista[i];
+    }
+
+    cronometro = clock();   //Inicia el cronómetro.
+
+    //ALGORITMO
+
+    //Detiene el cronómetro e imprime el tiempo.
+    cronometro = clock() - cronometro;
+    tiempo = ((double)cronometro)/CLOCKS_PER_SEC;
+    sprintf(T, "%0.2f s", tiempo);
+    settextstyle(0, 0, 2);
+    outtextxy(325+N*50, 200+id*50, T);
 }
 
-void binarythreeSort()
+void binarythreeSort(int id)
 {
+    int i,  j;          //Contadores.
+    int temp;           //Para almacenamiento temporal.
+    int listaOrd[N];    //Para ordenar la lista.
+    //Para medir el tiempo de ejecución.
+    clock_t cronometro;
+    double tiempo;
+    char T[8];
+
+    for(i = 0; i < N; i++)
+    {
+        listaOrd[i] = lista[i];
+    }
+
+    cronometro = clock();   //Inicia el cronómetro.
+
+    //ALGORITMO
+
+    //Detiene el cronómetro e imprime el tiempo.
+    cronometro = clock() - cronometro;
+    tiempo = ((double)cronometro)/CLOCKS_PER_SEC;
+    sprintf(T, "%0.2f s", tiempo);
+    settextstyle(0, 0, 2);
+    outtextxy(325+N*50, 200+id*50, T);
 }
 
-//Para el Bubble Sort, ordena dos elementos de la lista en la parte gráfica.
-void ordenamiento(int izq, int der, int listaOrd[])
+//Para Bubble y Cocktail, ordena dos elementos de la lista en la parte gráfica.
+void ordenamiento(int izq, int der, int listaOrd[], int id, int dir)
 {
     int i;
 
     for(i = 0; i < (der - izq)*50; i++)
     {
-        setcolor(GREEN);
-        objeto(325+izq*50+i, 200, listaOrd[izq]);
-        objeto(325+der*50-i, 200, listaOrd[der]);
+        if (dir == 0) {setcolor(GREEN);} else {setcolor(RED);};
+        objeto(325+izq*50+i, 200+id*50, listaOrd[izq]);
+        objeto(325+der*50-i, 200+id*50, listaOrd[der]);
         delay(D);
-        setcolor(0);
-        objeto(325+izq*50+i, 200, listaOrd[izq]);
-        objeto(325+der*50-i, 200, listaOrd[der]);
+        setcolor(BLACK);
+        objeto(325+izq*50+i, 200+id*50, listaOrd[izq]);
+        objeto(325+der*50-i, 200+id*50, listaOrd[der]);
     }
 
     setcolor(WHITE);
-    objeto(325+izq*50+i, 200, listaOrd[izq]);
-    objeto(325+der*50-i, 200, listaOrd[der]);
+    objeto(325+izq*50+i, 200+id*50, listaOrd[izq]);
+    objeto(325+der*50-i, 200+id*50, listaOrd[der]);
 }
 
 //Crea los objetos de la parte gráfica.
