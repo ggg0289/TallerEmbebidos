@@ -34,7 +34,7 @@ void bucketSort(int id);
 void countingSort(int id);
 void mergeSort(int id);
 void binarythreeSort(int id);
-void ordenamiento(int izq, int der, int listaOrd[], int id, int dir);
+//void ordenamiento(int izq, int der, int listaOrd[], int id, int dir);
 void objeto(int x, int y, int num);
 
 int main()
@@ -140,7 +140,7 @@ void *menu(void *ID)
 
 void bubbleSort(int id)
 {
-    int i,  j;          //Contadores.
+    int i,  j, k;          //Contadores.
     int temp;           //Para almacenamiento temporal.
     int listaOrd[N];    //Para ordenar la lista.
     //Para medir el tiempo de ejecución.
@@ -163,7 +163,22 @@ void bubbleSort(int id)
             if(listaOrd[j] > listaOrd[j+1])
             {
                 //Para la parte gráfica.
-                ordenamiento(j, j+1, listaOrd, id, 0);
+                //ordenamiento(j, j+1, listaOrd, id, 0);
+                for(k = 0; k < ((j+1) - j)*50; k++)
+                {
+                    setcolor(GREEN);
+                    objeto(325+j*50+k, 200+id*50, listaOrd[j]);
+                    objeto(325+(j+1)*50-k, 200+id*50, listaOrd[(j+1)]);
+                    delay(D);
+                    setcolor(BLACK);
+                    objeto(325+j*50+k, 200+id*50, listaOrd[j]);
+                    objeto(325+(j+1)*50-k, 200+id*50, listaOrd[(j+1)]);
+                }
+
+                setcolor(WHITE);
+                objeto(325+j*50+k, 200+id*50, listaOrd[j]);
+                objeto(325+(j+1)*50-k, 200+id*50, listaOrd[(j+1)]);
+
                 //Para la parte de arreglos.
                 temp = listaOrd[j];
                 listaOrd[j] = listaOrd[j+1];
@@ -182,7 +197,7 @@ void bubbleSort(int id)
 
 void cocktailSort(int id)
 {
-    int i,  j;          //Contadores.
+    int i,  j, k;          //Contadores.
     int temp;           //Para almacenamiento temporal.
     int sw;             //Para
     int listaOrd[N];    //Para ordenar la lista.
@@ -207,17 +222,50 @@ void cocktailSort(int id)
             //Bubble Sort de izquierda a derecha.
             if(listaOrd[j] > listaOrd[j+1])
             {
-                ordenamiento(j, j+1, listaOrd, id, 0);
+                //ordenamiento(j, j+1, listaOrd, id, 0);
+                for(k = 0; k < ((j+1) - j)*50; k++)
+                {
+                    setcolor(GREEN);
+                    objeto(325+j*50+k, 200+id*50, listaOrd[j]);
+                    objeto(325+(j+1)*50-k, 200+id*50, listaOrd[(j+1)]);
+                    delay(D);
+                    setcolor(BLACK);
+                    objeto(325+j*50+k, 200+id*50, listaOrd[j]);
+                    objeto(325+(j+1)*50-k, 200+id*50, listaOrd[(j+1)]);
+                }
+
+                setcolor(WHITE);
+                objeto(325+j*50+k, 200+id*50, listaOrd[j]);
+                objeto(325+(j+1)*50-k, 200+id*50, listaOrd[(j+1)]);
+
                 temp = listaOrd[j+1];
                 listaOrd[j+1] = listaOrd[j];
                 listaOrd[j] = temp;
-                sw = 1;
+                //sw = 1;
             }
+        }
 
+        for(j = 0; j < N - 1 - i; j++)
+        {
             //Bubble Sort de derecha a izquierda.
             if(listaOrd[N-1-j] < listaOrd[N-2-j])
             {
-                ordenamiento(N-2-j, N-1-j, listaOrd, id, 1);
+                //ordenamiento(N-2-j, N-1-j, listaOrd, id, 1);
+                for(k = 0; k < ((N-1-j) - (N-2-j))*50; k++)
+                {
+                    setcolor(RED);
+                    objeto(325+(N-2-j)*50+k, 200+id*50, listaOrd[(N-2-j)]);
+                    objeto(325+(N-1-j)*50-k, 200+id*50, listaOrd[(N-1-j)]);
+                    delay(D);
+                    setcolor(BLACK);
+                    objeto(325+(N-2-j)*50+k, 200+id*50, listaOrd[(N-2-j)]);
+                    objeto(325+(N-1-j)*50-k, 200+id*50, listaOrd[(N-1-j)]);
+                }
+
+                setcolor(WHITE);
+                objeto(325+(N-2-j)*50+k, 200+id*50, listaOrd[(N-2-j)]);
+                objeto(325+(N-1-j)*50-k, 200+id*50, listaOrd[(N-1-j)]);
+
                 temp = listaOrd[N-2-j];
                 listaOrd[N-2-j] = listaOrd[N-1-j];
                 listaOrd[N-1-j] = temp;
@@ -236,7 +284,7 @@ void cocktailSort(int id)
 
 void insertionSort(int id)
 {
-    int i,  j;          //Contadores.
+    int i,  j, k;          //Contadores.
     int temp;           //Para almacenamiento temporal.
     int listaOrd[N];    //Para ordenar la lista.
     //Para medir el tiempo de ejecución.
@@ -257,6 +305,31 @@ void insertionSort(int id)
 
         while (j > 0 && listaOrd[j] < listaOrd[j-1])
         {
+            //ordenamiento(j-1, j, listaOrd, id, 0);
+            for(k = 0; k < (j - (j-1))*50; k++)
+            {
+                setcolor(GREEN);
+                objeto(325+(j-1)*50+k, 200+id*50, listaOrd[(j-1)]);
+                setcolor(RED);
+                objeto(325+j*50-k, 200+id*50, listaOrd[j]);
+                delay(D);
+                setcolor(BLACK);
+                objeto(325+(j-1)*50+k, 200+id*50, listaOrd[(j-1)]);
+                objeto(325+j*50-k, 200+id*50, listaOrd[j]);
+            }
+
+            if (j==i)
+            {
+                setcolor(BLUE);
+            }
+            else
+            {
+                setcolor(WHITE);
+            }
+            objeto(325+(j-1)*50+k, 200+id*50, listaOrd[(j-1)]);
+            setcolor(WHITE);
+            objeto(325+j*50-k, 200+id*50, listaOrd[j]);
+
             temp = listaOrd[j];
             listaOrd[j] = listaOrd[j-1];
             listaOrd[j-1] = temp;
@@ -380,26 +453,29 @@ void binarythreeSort(int id)
     outtextxy(325+N*50, 200+id*50, T);
 }
 
-//Para Bubble y Cocktail, ordena dos elementos de la lista en la parte gráfica.
+//Ordena dos elementos de la lista en la parte gráfica.
+//Intentar adaptarlo para varios algoritmos complica mucho la vida.
+/*
 void ordenamiento(int izq, int der, int listaOrd[], int id, int dir)
 {
-    int i;
+    int k;
 
-    for(i = 0; i < (der - izq)*50; i++)
+    for(k = 0; k < (der - izq)*50; k++)
     {
-        if (dir == 0) {setcolor(GREEN);} else {setcolor(RED);};
-        objeto(325+izq*50+i, 200+id*50, listaOrd[izq]);
-        objeto(325+der*50-i, 200+id*50, listaOrd[der]);
+        setcolor(GREEN);
+        objeto(325+izq*50+k, 200+id*50, listaOrd[izq]);
+        objeto(325+der*50-k, 200+id*50, listaOrd[der]);
         delay(D);
         setcolor(BLACK);
-        objeto(325+izq*50+i, 200+id*50, listaOrd[izq]);
-        objeto(325+der*50-i, 200+id*50, listaOrd[der]);
+        objeto(325+izq*50+k, 200+id*50, listaOrd[izq]);
+        objeto(325+der*50-k, 200+id*50, listaOrd[der]);
     }
 
     setcolor(WHITE);
-    objeto(325+izq*50+i, 200+id*50, listaOrd[izq]);
-    objeto(325+der*50-i, 200+id*50, listaOrd[der]);
+    objeto(325+izq*50+k, 200+id*50, listaOrd[izq]);
+    objeto(325+der*50-k, 200+id*50, listaOrd[der]);
 }
+*/
 
 //Crea los objetos de la parte gráfica.
 void objeto(int x, int y, int num)
