@@ -11,11 +11,11 @@ Algoritnmos basados en:
 http://www.ccodechamp.com/c-program-of-bubble-sort-algorithm-c-code-champs/
 http://www.ccodechamp.com/c-program-for-cocktail-sort-algorithm-c-code-champ/
 http://www.ccodechamp.com/c-program-for-insertion-sort-algorithm/
+https://www.geeksforgeeks.org/insertion-sort/
 http://www.ccodechamp.com/c-program-for-selection-sort-algorithm-c-code-champs/
-http://www.ccodechamp.com/c-program-for-bucket-sort-algorithm/
-http://www.ccodechamp.com/c-program-for-counting-sort-algorithm/
-http://www.ccodechamp.com/c-program-of-merge-sort-algorithm-c-code-champ/
-http://www.ccodechamp.com/c-program-for-binary-tree-sort-algorithm/
+http://www.ccodechamp.com/c-program-of-gnome-sort-algorithm-c-code-champ/
+https://www.geeksforgeeks.org/gnome-sort-a-stupid-one/
+
 Animación basada en:
 https://c.happycodings.com/beginners-lab-assignments/code91.html
 */
@@ -32,8 +32,7 @@ void bubbleSort(int id);
 void cocktailSort(int id);
 void insertionSort(int id);
 void selectionSort(int id);
-void bucketSort(int id);
-void countingSort(int id);
+void gnomeSort(int id);
 void mergeSort(int id);
 void binarythreeSort(int id);
 //void ordenamiento(int izq, int der, int listaOrd[], int id, int dir);
@@ -48,7 +47,7 @@ int main()
       "Cocktail Sort",
       "Insertion Sort",
       "Selection Sort",
-      "Counting Sort",
+      "Gnome Sort",
       "Merge Sort",
       "Binary Tree Sort"
     };                  //Nombres de los algoritmos.
@@ -92,7 +91,7 @@ int main()
     }
 */
     //Usado para probar que los algoritmos sirven, uno por uno.
-    int v = 3;
+    int v = 2;
     hiloRetorno[v] = pthread_create(&hiloID[v], NULL, menu, &v);
     pthread_join(hiloID[v], NULL);
 
@@ -128,7 +127,7 @@ void *menu(void *ID)
                 break;
         case 3: selectionSort(3);
                 break;
-        case 4: countingSort(4);
+        case 4: gnomeSort(4);
                 break;
         case 5: mergeSort(5);
                 break;
@@ -140,6 +139,7 @@ void *menu(void *ID)
     }
 }
 
+//Compara n con n+1 y los ordena, n++, repetir hasta ordenar todo.
 void bubbleSort(int id)
 {
     int i,  j, k;       //Contadores.
@@ -201,6 +201,7 @@ void bubbleSort(int id)
     outtextxy(325+N*50, 200+id*50, T);
 }
 
+//Hace un Bubble de izquierda a derecha y otro de derecha a izquierda, repetir hasta ordenar todo.
 void cocktailSort(int id)
 {
     int i,  j, k;       //Contadores.
@@ -292,6 +293,7 @@ void cocktailSort(int id)
     outtextxy(325+N*50, 200+id*50, T);
 }
 
+//Compara n con los elementos < n y lo coloca en donde corresponde de una vez, n++, repetir hasta ordenar todo.
 void insertionSort(int id)
 {
     int i,  j, k;       //Contadores.
@@ -371,6 +373,7 @@ void insertionSort(int id)
     outtextxy(325+N*50, 200+id*50, T);
 }
 
+//Compara n con los elementos > n para determinar el menor e intercambiar, repetir hasta ordenar todo.
 void selectionSort(int id)
 {
     int i,  j, k, l;    //Contadores.
@@ -460,11 +463,13 @@ void selectionSort(int id)
     outtextxy(325+N*50, 200+id*50, T);
 }
 
-void bucketSort(int id)
+//Compara n con los elementos < n y lo coloca en donde corresponde mediante intercambios, n++, repetir hasta ordenar todo.
+void gnomeSort(int id)
 {
-    int i,  j;          //Contadores.
+    int i, k;          //Contadores.
     int temp;           //Para almacenamiento temporal.
     int listaOrd[N];    //Para ordenar la lista.
+
     //Para medir el tiempo de ejecución.
     clock_t cronometro;
     double tiempo;
@@ -477,34 +482,38 @@ void bucketSort(int id)
 
     cronometro = clock();   //Inicia el cronómetro.
 
-    //ALGORITMO
-
-    //Detiene el cronómetro e imprime el tiempo.
-    cronometro = clock() - cronometro;
-    tiempo = ((double)cronometro)/CLOCKS_PER_SEC;
-    sprintf(T, "%0.2f s", tiempo);
-    settextstyle(0, 0, 2);
-    outtextxy(325+N*50, 200+id*50, T);
-}
-
-void countingSort(int id)
-{
-    int i,  j;          //Contadores.
-    int temp;           //Para almacenamiento temporal.
-    int listaOrd[N];    //Para ordenar la lista.
-    //Para medir el tiempo de ejecución.
-    clock_t cronometro;
-    double tiempo;
-    char T[8];
-
-    for(i = 0; i < N; i++)
+    i = 0;
+    while(i < N)
     {
-        listaOrd[i] = lista[i];
+        if (i == 0 || listaOrd[i] >= listaOrd[i - 1])
+        {
+            i++;
+        }
+        else
+        {
+            //Para la pate gráfica.
+            for(k = 0; k < (i - (i-1))*50; k++)
+            {
+                setcolor(GREEN);
+                objeto(325+(i-1)*50+k, 200+id*50, listaOrd[(i-1)]);
+                objeto(325+i*50-k, 200+id*50, listaOrd[i]);
+                delay(D);
+                setcolor(BLACK);
+                objeto(325+(i-1)*50+k, 200+id*50, listaOrd[(i-1)]);
+                objeto(325+i*50-k, 200+id*50, listaOrd[i]);
+            }
+
+            setcolor(WHITE);
+            objeto(325+(i-1)*50+k, 200+id*50, listaOrd[(i-1)]);
+            objeto(325+i*50-k, 200+id*50, listaOrd[i]);
+
+            //Para la parte de arreglos.
+            temp = listaOrd[i];
+            listaOrd[i] = listaOrd[i - 1];
+            listaOrd[i - 1] = temp;
+            i--;
+        }
     }
-
-    cronometro = clock();   //Inicia el cronómetro.
-
-    //ALGORITMO
 
     //Detiene el cronómetro e imprime el tiempo.
     cronometro = clock() - cronometro;
