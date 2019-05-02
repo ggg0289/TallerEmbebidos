@@ -1,8 +1,7 @@
 #include<stdio.h>
-#include<conio.h>
 
 /*
-Algoritmo Bucket Sort.
+Algoritmo Selection Sort.
 Tomado de: http://www.ccodechamp.com/c-program-for-selection-sort-algorithm-c-code-champs/
 */
 
@@ -50,5 +49,5 @@ int main()
         printf("%d\t", a[i]);
     }
 
-    getch();
+    return 0;
 }
