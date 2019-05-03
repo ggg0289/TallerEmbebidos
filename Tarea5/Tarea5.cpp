@@ -1,7 +1,5 @@
 #include<stdio.h>
-#include<conio.h>
 #include<pthread.h>
-#include<semaphore.h>
 #include<time.h>
 #include<graphics.h>
 
@@ -21,20 +19,20 @@ Animación basada en:
 https://c.happycodings.com/beginners-lab-assignments/code91.html
 */
 
-#define D 10                //Para los delays, cuando se necesite visualizar.
-#define MNX 50              //Margen en x para los nombres.
-#define MNY 140             //Margen en y para los nombres.
-#define MLX MNX+275         //Margen en x para los elementos iniciales.
-#define MLY MNY+10          //Margen en y para los elementos iniciales.
-#define MOX MNX+275         //Margen en x para los elementos a ordenar.
-#define MOY MLY+50          //Margen en y para los elementos a ordenar.
-#define MBY MOY+50          //Margen en y para los elementos a ordenar uando bajan.
-#define ESP 50              //Espaciado enre elementos.
+#define D 10            //Para los delays, cuando se necesite visualizar.
+#define MNX 25          //Margen en x para los nombres.
+#define MNY 25         //Margen en y para los nombres.
+#define MLX MNX+240     //Margen en x para los elementos iniciales.
+#define MLY MNY+10      //Margen en y para los elementos iniciales.
+#define MOX MLX         //Margen en x para los elementos a ordenar.
+#define MOY MLY+50      //Margen en y para los elementos a ordenar.
+#define MBY MOY+50      //Margen en y para los elementos a ordenar uando bajan.
+#define ESP 50          //Espaciado enre elementos.
 
 int N;              //Número de elementos a ordenar.
 int lista[100];     //Lista de elementos a ordenar.
 
-sem_t mutex;        //Semáforo que actúa como mutex.
+pthread_mutex_t mutex;
 
 void *menu(void *ID);
 void bubbleSort(int id);
@@ -62,7 +60,7 @@ int main()
       "Quick Sort"
     };                  //Nombres de los algoritmos.
 
-    printf("\n\tALGORITMOS DE ORDENAMIENTO\n");
+    printf("\n\tALGORITMOS DE ORDENAMIENTO - INGRESO DE DATOS\n");
 
     printf("\nIngrese el numero de elementos a ordenar: " );
     scanf("%d", &N);
@@ -74,38 +72,41 @@ int main()
         scanf("%d", &lista[i]);
     }
 
+    initwindow(1000, 700, "ALGORITMOS DE ORDENAMIENTO - EJECUCIÓN");  //Iniciar graphics.
+
     //Arreglos para variables de los hilos.
-    pthread_t hiloID[7];    //Identificador.
-    int hiloRetorno[7];     //Valor de retorno.
+    pthread_t hiloID[7];        //Identificador.
+    int hiloRetorno[7];         //Valor de retorno.
 
-    initwindow(1000, 600);  //Iniciar graphics.
-    settextstyle(4, 0, 3);
-    outtextxy(250, 50, (char *)"ALGORITMOS DE ORDENAMIENTO");
+    pthread_mutex_init(&mutex, NULL);     //Inicializar el mutex.
 
-    //Imprimir los nombres y los arreglos.
+    //Imprimir los nombres y los elementos.
+    int INT = 50;    //Interlineado.
     for(i = 0; i < 8; i++)
     {
+        if (i < 5)
+        {
+            INT = 50;
+        }
+        else
+        {
+            INT = 100;
+        }
+
         settextstyle(4, 0, 1);
-        outtextxy(MNX, MNY+i*ESP, (char *)sorts[i]);
+        outtextxy(MNX, MNY+i*INT, (char *)sorts[i]);
 
         for(j = 0; j < N; j++)
         {
-            objeto(MLX+j*ESP, MLY+i*ESP, lista[j]);
+            objeto(MLX+j*ESP, MLY+i*INT, lista[j]);
         }
     }
 /*
-    //Usado para hacer experimentos.
-    for(i = 0; i < N; i++)
-    {
-        objeto(MLX+i*ESP, MLY, lista[i]);
-    }
-*/
     //Usado para probar que los algoritmos sirven, uno por uno.
-    int v = 6;
+    int v = 4;
     hiloRetorno[v] = pthread_create(&hiloID[v], NULL, menu, &v);
     pthread_join(hiloID[v], NULL);
-
- /*
+*//*
     //Creación de un hilo por algoritmo.
     for (i = 0; i < 7; i++)
     {
@@ -117,6 +118,8 @@ int main()
         pthread_join(hiloID[i], NULL);
     }
 */
+    pthread_mutex_destroy(&mutex);
+
     getch();
     closegraph();   //Finalizar graphics.
     printf("\nActividades concluidas. Presione una tecla para salir.\n");
@@ -164,7 +167,6 @@ void bubbleSort(int id)
     for(i = 0; i < N; i++)
     {
         listaOrd[i] = lista[i];
-        //objeto(MOX+i*ESP, MOY, listaOrd[i]);
     }
 
     cronometro = clock();   //Inicia el cronómetro.
@@ -179,7 +181,6 @@ void bubbleSort(int id)
             if(listaOrd[j] > listaOrd[j+1])
             {
                 //Para la parte gráfica.
-                //ordenamiento(j, j+1, listaOrd, id, 0);
                 for(k = 0; k < ((j+1) - j)*ESP; k++)
                 {
                     setcolor(GREEN);
@@ -236,13 +237,11 @@ void cocktailSort(int id)
     for(i = 0; i < N - 1 && sw == 1; i++)
     {
         sw = 0;
-        //Para comparar elementos.
+        //Bubble Sort de izquierda a derecha.
         for(j = 0; j < N - 1 - i; j++)
         {
-            //Bubble Sort de izquierda a derecha.
             if(listaOrd[j] > listaOrd[j+1])
             {
-                //ordenamiento(j, j+1, listaOrd, id, 0);
                 for(k = 0; k < ((j+1) - j)*ESP; k++)
                 {
                     setcolor(GREEN);
@@ -265,10 +264,9 @@ void cocktailSort(int id)
             }
         }
 
-        //Para comparar elementos.
+        //Bubble Sort de derecha a izquierda.
         for(j = 0; j < N - 1 - i; j++)
         {
-            //Bubble Sort de derecha a izquierda.
             if(listaOrd[N-1-j] < listaOrd[N-2-j])
             {
                 //ordenamiento(N-2-j, N-1-j, listaOrd, id, 1);
@@ -330,7 +328,6 @@ void insertionSort(int id)
         while (j > 0 && listaOrd[j] < listaOrd[j-1])
         {
             //Para la parte gráfica.
-            //ordenamiento(j-1, j, listaOrd, id, 0);
             for(k = 0; k < (j - (j-1))*ESP; k++)
             {
                 //El primer elemento del primer ciclo siempre será azul.
@@ -884,13 +881,13 @@ int newGap(int gap)
 void objeto(int x, int y, int num)
 {
     //Protegido por mutex porque va a ser usado por todos los algoritmos.
-    sem_wait(&mutex);   //Mutex lock.
+    pthread_mutex_lock(&mutex);   //Mutex lock.
 
     char dato[8];
     sprintf(dato, "%d", num);
     circle(x, y, 15);
     settextstyle(0, 0, 2);
-    outtextxy(x-3, y-10, dato);
+    outtextxy(x-5, y-9, dato);
 
-    sem_post(&mutex);   //Mutex unlock.
+    pthread_mutex_unlock(&mutex);   //Mutex unlock.
 }
