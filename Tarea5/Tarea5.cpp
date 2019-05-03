@@ -12,15 +12,24 @@ http://www.ccodechamp.com/c-program-of-bubble-sort-algorithm-c-code-champs/
 http://www.ccodechamp.com/c-program-for-cocktail-sort-algorithm-c-code-champ/
 http://www.ccodechamp.com/c-program-for-insertion-sort-algorithm/
 https://www.geeksforgeeks.org/insertion-sort/
-http://www.ccodechamp.com/c-program-for-selection-sort-algorithm-c-code-champs/
-http://www.ccodechamp.com/c-program-of-gnome-sort-algorithm-c-code-champ/
+https://www.geeksforgeeks.org/odd-even-sort-brick-sort/
 https://www.geeksforgeeks.org/gnome-sort-a-stupid-one/
-
+http://www.ccodechamp.com/c-program-for-selection-sort-algorithm-c-code-champs/
+http://www.ccodechamp.com/c-program-for-comb-sort-algorithm-c-code-champ/
+http://www.ccodechamp.com/c-program-for-quick-sort-algorithm/
 Animación basada en:
 https://c.happycodings.com/beginners-lab-assignments/code91.html
 */
 
-#define D 100        //Para los delays, cuando se necesite visualizar.
+#define D 10                //Para los delays, cuando se necesite visualizar.
+#define MNX 50              //Margen en x para los nombres.
+#define MNY 140             //Margen en y para los nombres.
+#define MLX MNX+275         //Margen en x para los elementos iniciales.
+#define MLY MNY+10          //Margen en y para los elementos iniciales.
+#define MOX MNX+275         //Margen en x para los elementos a ordenar.
+#define MOY MLY+50          //Margen en y para los elementos a ordenar.
+#define MBY MOY+50          //Margen en y para los elementos a ordenar uando bajan.
+#define ESP 50              //Espaciado enre elementos.
 
 int N;              //Número de elementos a ordenar.
 int lista[100];     //Lista de elementos a ordenar.
@@ -31,10 +40,11 @@ void *menu(void *ID);
 void bubbleSort(int id);
 void cocktailSort(int id);
 void insertionSort(int id);
+void oddevenSort(int id);
 void selectionSort(int id);
-void gnomeSort(int id);
-void mergeSort(int id);
-void binarythreeSort(int id);
+void combSort(int id);
+void shellSort(int id);
+int newGap(int gap);
 //void ordenamiento(int izq, int der, int listaOrd[], int id, int dir);
 void objeto(int x, int y, int num);
 
@@ -46,10 +56,10 @@ int main()
       "Bubble Sort",
       "Cocktail Sort",
       "Insertion Sort",
+      "Odd-Even Sort",
       "Selection Sort",
-      "Gnome Sort",
-      "Merge Sort",
-      "Binary Tree Sort"
+      "Comb Sort",
+      "Quick Sort"
     };                  //Nombres de los algoritmos.
 
     printf("\n\tALGORITMOS DE ORDENAMIENTO\n");
@@ -76,22 +86,22 @@ int main()
     for(i = 0; i < 8; i++)
     {
         settextstyle(4, 0, 1);
-        outtextxy(50, 140+i*50, (char *)sorts[i]);
+        outtextxy(MNX, MNY+i*ESP, (char *)sorts[i]);
 
         for(j = 0; j < N; j++)
         {
-            objeto(325+j*50, 150+i*50, lista[j]);
+            objeto(MLX+j*ESP, MLY+i*ESP, lista[j]);
         }
     }
 /*
     //Usado para hacer experimentos.
     for(i = 0; i < N; i++)
     {
-        objeto(325+i*50, 150, lista[i]);
+        objeto(MLX+i*ESP, MLY, lista[i]);
     }
 */
     //Usado para probar que los algoritmos sirven, uno por uno.
-    int v = 2;
+    int v = 6;
     hiloRetorno[v] = pthread_create(&hiloID[v], NULL, menu, &v);
     pthread_join(hiloID[v], NULL);
 
@@ -125,13 +135,13 @@ void *menu(void *ID)
                 break;
         case 2: insertionSort(2);
                 break;
-        case 3: selectionSort(3);
+        case 3: oddevenSort(3);
                 break;
-        case 4: gnomeSort(4);
+        case 4: selectionSort(4);
                 break;
-        case 5: mergeSort(5);
+        case 5: combSort(5);
                 break;
-        case 6: binarythreeSort(6);
+        case 6: shellSort(6);
                 break;
        default: settextstyle(0, 0, 2);
                 outtextxy(500, 500, (char *)"Este algoritmo no existe.");
@@ -154,7 +164,7 @@ void bubbleSort(int id)
     for(i = 0; i < N; i++)
     {
         listaOrd[i] = lista[i];
-        //objeto(325+i*50, 200, listaOrd[i]);
+        //objeto(MOX+i*ESP, MOY, listaOrd[i]);
     }
 
     cronometro = clock();   //Inicia el cronómetro.
@@ -170,20 +180,20 @@ void bubbleSort(int id)
             {
                 //Para la parte gráfica.
                 //ordenamiento(j, j+1, listaOrd, id, 0);
-                for(k = 0; k < ((j+1) - j)*50; k++)
+                for(k = 0; k < ((j+1) - j)*ESP; k++)
                 {
                     setcolor(GREEN);
-                    objeto(325+j*50+k, 200+id*50, listaOrd[j]);
-                    objeto(325+(j+1)*50-k, 200+id*50, listaOrd[(j+1)]);
+                    objeto(MOX+j*ESP+k, MOY+id*ESP, listaOrd[j]);
+                    objeto(MOX+(j+1)*ESP-k, MOY+id*ESP, listaOrd[(j+1)]);
                     delay(D);
                     setcolor(BLACK);
-                    objeto(325+j*50+k, 200+id*50, listaOrd[j]);
-                    objeto(325+(j+1)*50-k, 200+id*50, listaOrd[(j+1)]);
+                    objeto(MOX+j*ESP+k, MOY+id*ESP, listaOrd[j]);
+                    objeto(MOX+(j+1)*ESP-k, MOY+id*ESP, listaOrd[(j+1)]);
                 }
 
                 setcolor(WHITE);
-                objeto(325+j*50+k, 200+id*50, listaOrd[j]);
-                objeto(325+(j+1)*50-k, 200+id*50, listaOrd[(j+1)]);
+                objeto(MOX+j*ESP+k, MOY+id*ESP, listaOrd[j]);
+                objeto(MOX+(j+1)*ESP-k, MOY+id*ESP, listaOrd[(j+1)]);
 
                 //Para la parte de arreglos.
                 temp = listaOrd[j];
@@ -198,10 +208,10 @@ void bubbleSort(int id)
     tiempo = ((double)cronometro)/CLOCKS_PER_SEC;
     sprintf(T, "%0.2f s", tiempo);
     settextstyle(0, 0, 2);
-    outtextxy(325+N*50, 200+id*50, T);
+    outtextxy(MOX+N*ESP, MOY+id*ESP, T);
 }
 
-//Hace un Bubble de izquierda a derecha y otro de derecha a izquierda, repetir hasta ordenar todo.
+//Hace un Bubble Sort de izquierda a derecha y otro de derecha a izquierda, repetir hasta ordenar todo.
 void cocktailSort(int id)
 {
     int i,  j, k;       //Contadores.
@@ -233,20 +243,20 @@ void cocktailSort(int id)
             if(listaOrd[j] > listaOrd[j+1])
             {
                 //ordenamiento(j, j+1, listaOrd, id, 0);
-                for(k = 0; k < ((j+1) - j)*50; k++)
+                for(k = 0; k < ((j+1) - j)*ESP; k++)
                 {
                     setcolor(GREEN);
-                    objeto(325+j*50+k, 200+id*50, listaOrd[j]);
-                    objeto(325+(j+1)*50-k, 200+id*50, listaOrd[(j+1)]);
+                    objeto(MOX+j*ESP+k, MOY+id*ESP, listaOrd[j]);
+                    objeto(MOX+(j+1)*ESP-k, MOY+id*ESP, listaOrd[(j+1)]);
                     delay(D);
                     setcolor(BLACK);
-                    objeto(325+j*50+k, 200+id*50, listaOrd[j]);
-                    objeto(325+(j+1)*50-k, 200+id*50, listaOrd[(j+1)]);
+                    objeto(MOX+j*ESP+k, MOY+id*ESP, listaOrd[j]);
+                    objeto(MOX+(j+1)*ESP-k, MOY+id*ESP, listaOrd[(j+1)]);
                 }
 
                 setcolor(WHITE);
-                objeto(325+j*50+k, 200+id*50, listaOrd[j]);
-                objeto(325+(j+1)*50-k, 200+id*50, listaOrd[(j+1)]);
+                objeto(MOX+j*ESP+k, MOY+id*ESP, listaOrd[j]);
+                objeto(MOX+(j+1)*ESP-k, MOY+id*ESP, listaOrd[(j+1)]);
 
                 temp = listaOrd[j+1];
                 listaOrd[j+1] = listaOrd[j];
@@ -262,20 +272,20 @@ void cocktailSort(int id)
             if(listaOrd[N-1-j] < listaOrd[N-2-j])
             {
                 //ordenamiento(N-2-j, N-1-j, listaOrd, id, 1);
-                for(k = 0; k < ((N-1-j) - (N-2-j))*50; k++)
+                for(k = 0; k < ((N-1-j) - (N-2-j))*ESP; k++)
                 {
                     setcolor(RED);
-                    objeto(325+(N-2-j)*50+k, 200+id*50, listaOrd[(N-2-j)]);
-                    objeto(325+(N-1-j)*50-k, 200+id*50, listaOrd[(N-1-j)]);
+                    objeto(MOX+(N-2-j)*ESP+k, MOY+id*ESP, listaOrd[(N-2-j)]);
+                    objeto(MOX+(N-1-j)*ESP-k, MOY+id*ESP, listaOrd[(N-1-j)]);
                     delay(D);
                     setcolor(BLACK);
-                    objeto(325+(N-2-j)*50+k, 200+id*50, listaOrd[(N-2-j)]);
-                    objeto(325+(N-1-j)*50-k, 200+id*50, listaOrd[(N-1-j)]);
+                    objeto(MOX+(N-2-j)*ESP+k, MOY+id*ESP, listaOrd[(N-2-j)]);
+                    objeto(MOX+(N-1-j)*ESP-k, MOY+id*ESP, listaOrd[(N-1-j)]);
                 }
 
                 setcolor(WHITE);
-                objeto(325+(N-2-j)*50+k, 200+id*50, listaOrd[(N-2-j)]);
-                objeto(325+(N-1-j)*50-k, 200+id*50, listaOrd[(N-1-j)]);
+                objeto(MOX+(N-2-j)*ESP+k, MOY+id*ESP, listaOrd[(N-2-j)]);
+                objeto(MOX+(N-1-j)*ESP-k, MOY+id*ESP, listaOrd[(N-1-j)]);
 
                 temp = listaOrd[N-2-j];
                 listaOrd[N-2-j] = listaOrd[N-1-j];
@@ -290,10 +300,10 @@ void cocktailSort(int id)
     tiempo = ((double)cronometro)/CLOCKS_PER_SEC;
     sprintf(T, "%0.2f s", tiempo);
     settextstyle(0, 0, 2);
-    outtextxy(325+N*50, 200+id*50, T);
+    outtextxy(MOX+N*ESP, MOY+id*ESP, T);
 }
 
-//Compara n con los elementos < n y lo coloca en donde corresponde de una vez, n++, repetir hasta ordenar todo.
+//Compara n con los elementos < n y lo coloca en donde corresponde, n++, repetir hasta ordenar todo.
 void insertionSort(int id)
 {
     int i,  j, k;       //Contadores.
@@ -321,7 +331,7 @@ void insertionSort(int id)
         {
             //Para la parte gráfica.
             //ordenamiento(j-1, j, listaOrd, id, 0);
-            for(k = 0; k < (j - (j-1))*50; k++)
+            for(k = 0; k < (j - (j-1))*ESP; k++)
             {
                 //El primer elemento del primer ciclo siempre será azul.
                 if (j==i)
@@ -332,16 +342,16 @@ void insertionSort(int id)
                 {
                     setcolor(BLACK);
                 }
-                objeto(325+j*50, 200+id*50, listaOrd[j]);
+                objeto(MOX+j*ESP, MOY+id*ESP, listaOrd[j]);
                 //Intercambio.
                 setcolor(GREEN);                                        //Elemento anterior.
-                objeto(325+(j-1)*50+k, 200+id*50, listaOrd[(j-1)]);
+                objeto(MOX+(j-1)*ESP+k, MOY+id*ESP, listaOrd[(j-1)]);
                 setcolor(RED);                                          //Elemento presente.
-                objeto(325+j*50-k, 200+id*50, listaOrd[j]);
+                objeto(MOX+j*ESP-k, MOY+id*ESP, listaOrd[j]);
                 delay(D);
                 setcolor(BLACK);                                        //"Borra" lo que queda al intercambair.
-                objeto(325+(j-1)*50+k, 200+id*50, listaOrd[(j-1)]);
-                objeto(325+j*50-k, 200+id*50, listaOrd[j]);
+                objeto(MOX+(j-1)*ESP+k, MOY+id*ESP, listaOrd[(j-1)]);
+                objeto(MOX+j*ESP-k, MOY+id*ESP, listaOrd[j]);
             }
 
             //El primer elemento del primer ciclo siempre será azul.
@@ -353,9 +363,9 @@ void insertionSort(int id)
             {
                 setcolor(WHITE);
             }
-            objeto(325+(j-1)*50+k, 200+id*50, listaOrd[(j-1)]);
+            objeto(MOX+(j-1)*ESP+k, MOY+id*ESP, listaOrd[(j-1)]);
             setcolor(WHITE);
-            objeto(325+j*50-k, 200+id*50, listaOrd[j]);
+            objeto(MOX+j*ESP-k, MOY+id*ESP, listaOrd[j]);
 
             //Para la parte de arreglos.
             temp = listaOrd[j];
@@ -370,13 +380,100 @@ void insertionSort(int id)
     tiempo = ((double)cronometro)/CLOCKS_PER_SEC;
     sprintf(T, "%0.2f s", tiempo);
     settextstyle(0, 0, 2);
-    outtextxy(325+N*50, 200+id*50, T);
+    outtextxy(MOX+N*ESP, MOY+id*ESP, T);
+}
+
+//Aplica Bubble Sort a un número par e impar de parejas, repetir hasta ordenar todo.
+void oddevenSort(int id)
+{
+    int i, k;               //Contadores.
+    int temp;               //Para almacenamiento temporal.
+    int listaOrd[N];        //Para ordenar la lista.
+    bool isSorted = false;  //Control del bucle.
+
+    //Para medir el tiempo de ejecución.
+    clock_t cronometro;
+    double tiempo;
+    char T[8];
+
+    for(i = 0; i < N; i++)
+    {
+        listaOrd[i] = lista[i];
+    }
+
+    cronometro = clock();   //Inicia el cronómetro.
+
+    while (!isSorted)
+    {
+        isSorted = true;
+
+        //Bubble Sort para el número impar de parejas.
+        for (i=1; i<=N-2; i=i+2)
+        {
+            if (listaOrd[i] > listaOrd[i+1])
+            {
+                for(k = 0; k < ((i+1) - i)*ESP; k++)
+                {
+                    setcolor(RED);
+                    objeto(MOX+i*ESP+k, MOY+id*ESP, listaOrd[i]);
+                    objeto(MOX+(i+1)*ESP-k, MOY+id*ESP, listaOrd[(i+1)]);
+                    delay(D);
+                    setcolor(BLACK);
+                    objeto(MOX+i*ESP+k, MOY+id*ESP, listaOrd[i]);
+                    objeto(MOX+(i+1)*ESP-k, MOY+id*ESP, listaOrd[(i+1)]);
+                }
+
+                setcolor(WHITE);
+                objeto(MOX+i*ESP+k, MOY+id*ESP, listaOrd[i]);
+                objeto(MOX+(i+1)*ESP-k, MOY+id*ESP, listaOrd[(i+1)]);
+
+                temp = listaOrd[i+1];
+                listaOrd[i+1] = listaOrd[i];
+                listaOrd[i] = temp;
+                isSorted = false;
+              }
+        }
+
+        //Bubble Sort para número par de parejas.
+        for (int i=0; i<=N-2; i=i+2)
+        {
+            if (listaOrd[i] > listaOrd[i+1])
+            {
+                for(k = 0; k < ((i+1) - i)*ESP; k++)
+                {
+                    setcolor(GREEN);
+                    objeto(MOX+i*ESP+k, MOY+id*ESP, listaOrd[i]);
+                    objeto(MOX+(i+1)*ESP-k, MOY+id*ESP, listaOrd[(i+1)]);
+                    delay(D);
+                    setcolor(BLACK);
+                    objeto(MOX+i*ESP+k, MOY+id*ESP, listaOrd[i]);
+                    objeto(MOX+(i+1)*ESP-k, MOY+id*ESP, listaOrd[(i+1)]);
+                }
+
+                setcolor(WHITE);
+                objeto(MOX+i*ESP+k, MOY+id*ESP, listaOrd[i]);
+                objeto(MOX+(i+1)*ESP-k, MOY+id*ESP, listaOrd[(i+1)]);
+
+                temp = listaOrd[i+1];
+                listaOrd[i+1] = listaOrd[i];
+                listaOrd[i] = temp;
+                isSorted = false;
+            }
+        }
+    }
+
+    //Detiene el cronómetro e imprime el tiempo.
+    cronometro = clock() - cronometro;
+    tiempo = ((double)cronometro)/CLOCKS_PER_SEC;
+    sprintf(T, "%0.2f s", tiempo);
+    settextstyle(0, 0, 2);
+    outtextxy(MOX+N*ESP, MOY+id*ESP, T);
 }
 
 //Compara n con los elementos > n para determinar el menor e intercambiar, repetir hasta ordenar todo.
 void selectionSort(int id)
 {
-    int i,  j, k, l;    //Contadores.
+    int i,  j, k;       //Contadores.
     int amin, imin;     //Para valores mínimos.
     int temp;           //Para almacenamiento temporal.
     int listaOrd[N];    //Para ordenar la lista.
@@ -415,38 +512,66 @@ void selectionSort(int id)
         if(imin != 1)
         {
             //Para la parte gráfica.
-            for(k = 0; k < (imin - i)*50; k++)
+            //Bajar.
+            for(k = 0; k < ESP; k++)
             {
-                //Estos dos fors eson par que no se borren los objetos, hay que reimprimirlos.
-                for(l = i+1; l < imin; l++)
-                {
-                    setcolor(WHITE);
-                    objeto(325+l*50, 200+id*50, listaOrd[l]);
-                }
+                setcolor(BLUE);
+                objeto(MOX+i*ESP, MOY+id*ESP, listaOrd[i]);
+                setcolor(RED);
+                objeto(MOX+imin*ESP, MOY+id*ESP, listaOrd[imin]);
 
-                for(l = imin+1; l < N; l++)
-                {
-                    setcolor(WHITE);
-                    objeto(325+l*50, 200+id*50, listaOrd[l]);
-                }
-
-                setcolor(BLUE);                                     //Presunto mínimo.
-                objeto(325+i*50, 200+id*50, listaOrd[i]);
-                setcolor(RED);                                      //Verdadero mínimo.
-                objeto(325+imin*50, 200+id*50, listaOrd[imin]);
-                //Intercambio.
                 setcolor(GREEN);
-                objeto(325+i*50+k, 200+id*50, listaOrd[i]);
-                objeto(325+imin*50-k, 200+id*50, listaOrd[imin]);
+                objeto(MOX+i*ESP, MOY+id*ESP+k, listaOrd[i]);
                 delay(D);
                 setcolor(BLACK);
-                objeto(325+i*50+k, 200+id*50, listaOrd[i]);
-                objeto(325+imin*50-k, 200+id*50, listaOrd[imin]);
+                objeto(MOX+i*ESP, MOY+id*ESP+k, listaOrd[i]);
+
+                setcolor(GREEN);
+                objeto(MOX+imin*ESP, MOY+id*ESP+k, listaOrd[imin]);
+                delay(D);
+                setcolor(BLACK);
+                objeto(MOX+imin*ESP, MOY+id*ESP+k, listaOrd[imin]);
             }
 
             setcolor(WHITE);
-            objeto(325+i*50+k, 200+id*50, listaOrd[i]);
-            objeto(325+imin*50-k, 200+id*50, listaOrd[imin]);
+            objeto(MOX+i*ESP, MOY+id*ESP+k, listaOrd[i]);
+            objeto(MOX+imin*ESP, MOY+id*ESP+k, listaOrd[imin]);
+
+            //Intercambiar.
+            for(k = 0; k < (imin - i)*ESP; k++)
+            {
+                setcolor(GREEN);
+                objeto(MOX+i*ESP+k, MBY+id*ESP, listaOrd[i]);
+                objeto(MOX+imin*ESP-k, MBY+id*ESP, listaOrd[imin]);
+                delay(D);
+                setcolor(BLACK);
+                objeto(MOX+i*ESP+k, MBY+id*ESP, listaOrd[i]);
+                objeto(MOX+imin*ESP-k, MBY+id*ESP, listaOrd[imin]);
+            }
+
+            setcolor(WHITE);
+            objeto(MOX+i*ESP+k, MBY+id*ESP, listaOrd[i]);
+            objeto(MOX+imin*ESP-k, MBY+id*ESP, listaOrd[imin]);
+
+            //Subir.
+            for(k = ESP; k > 0; k--)
+            {
+                setcolor(GREEN);
+                objeto(MOX+i*ESP, MOY+id*ESP+k, listaOrd[imin]);
+                delay(D);
+                setcolor(BLACK);
+                objeto(MOX+i*ESP, MOY+id*ESP+k, listaOrd[imin]);
+
+                setcolor(GREEN);
+                objeto(MOX+imin*ESP, MOY+id*ESP+k, listaOrd[i]);
+                delay(D);
+                setcolor(BLACK);
+                objeto(MOX+imin*ESP, MOY+id*ESP+k, listaOrd[i]);
+            }
+
+            setcolor(WHITE);
+            objeto(MOX+i*ESP, MOY+id*ESP+k, listaOrd[imin]);
+            objeto(MOX+imin*ESP, MOY+id*ESP+k, listaOrd[i]);
 
             //Para la parte de arreglos.
             temp = listaOrd[i];
@@ -460,15 +585,17 @@ void selectionSort(int id)
     tiempo = ((double)cronometro)/CLOCKS_PER_SEC;
     sprintf(T, "%0.2f s", tiempo);
     settextstyle(0, 0, 2);
-    outtextxy(325+N*50, 200+id*50, T);
+    outtextxy(MOX+N*ESP, MOY+id*ESP, T);
 }
 
-//Compara n con los elementos < n y lo coloca en donde corresponde mediante intercambios, n++, repetir hasta ordenar todo.
-void gnomeSort(int id)
+//Compara y ordena n y m distanciados por un gap, gap se reduce, repetir hasta ordenar todo.
+void combSort(int id)
 {
-    int i, k;          //Contadores.
+    int i,  j, k;       //Contadores.
     int temp;           //Para almacenamiento temporal.
     int listaOrd[N];    //Para ordenar la lista.
+    int gap = N;        //Gap inicial.
+    bool swapped;       //Control para el bucle.
 
     //Para medir el tiempo de ejecución.
     clock_t cronometro;
@@ -482,36 +609,192 @@ void gnomeSort(int id)
 
     cronometro = clock();   //Inicia el cronómetro.
 
-    i = 0;
-    while(i < N)
+    for (;;)
     {
-        if (i == 0 || listaOrd[i] >= listaOrd[i - 1])
+        gap = newGap(gap);  //Nuevo gap.
+        swapped = false;
+        //Compara elementos separados por el gap.
+        for (i = 0; i < N - gap; i++)
         {
-            i++;
-        }
-        else
-        {
-            //Para la pate gráfica.
-            for(k = 0; k < (i - (i-1))*50; k++)
+            j = i + gap;
+            //Ordena los elementos.
+            if (listaOrd[i] > listaOrd[j])
             {
-                setcolor(GREEN);
-                objeto(325+(i-1)*50+k, 200+id*50, listaOrd[(i-1)]);
-                objeto(325+i*50-k, 200+id*50, listaOrd[i]);
-                delay(D);
-                setcolor(BLACK);
-                objeto(325+(i-1)*50+k, 200+id*50, listaOrd[(i-1)]);
-                objeto(325+i*50-k, 200+id*50, listaOrd[i]);
+                //Para la parte gráfica.
+                //Bajar.
+                for(k = 0; k < ESP; k++)
+                {
+                    setcolor(BLUE);                             //Primer elemento.
+                    objeto(MOX+i*ESP, MOY+id*ESP, listaOrd[i]);
+                    setcolor(RED);                              //Elemento separado por el gap.
+                    objeto(MOX+j*ESP, MOY+id*ESP, listaOrd[j]);
+
+                    setcolor(GREEN);
+                    objeto(MOX+i*ESP, MOY+id*ESP+k, listaOrd[i]);
+                    delay(D);
+                    setcolor(BLACK);
+                    objeto(MOX+i*ESP, MOY+id*ESP+k, listaOrd[i]);
+
+                    setcolor(GREEN);
+                    objeto(MOX+j*ESP, MOY+id*ESP+k, listaOrd[j]);
+                    delay(D);
+                    setcolor(BLACK);
+                    objeto(MOX+j*ESP, MOY+id*ESP+k, listaOrd[j]);
+                }
+
+                setcolor(WHITE);
+                objeto(MOX+i*ESP, MOY+id*ESP+k, listaOrd[i]);
+                objeto(MOX+j*ESP, MOY+id*ESP+k, listaOrd[j]);
+
+                //Intercambiar.
+                for(k = 0; k < (j - i)*ESP; k++)
+                {
+                    setcolor(GREEN);
+                    objeto(MOX+i*ESP+k, MBY+id*ESP, listaOrd[i]);
+                    objeto(MOX+j*ESP-k, MBY+id*ESP, listaOrd[j]);
+                    delay(D);
+                    setcolor(BLACK);
+                    objeto(MOX+i*ESP+k, MBY+id*ESP, listaOrd[i]);
+                    objeto(MOX+j*ESP-k, MBY+id*ESP, listaOrd[j]);
+                }
+
+                setcolor(WHITE);
+                objeto(MOX+i*ESP+k, MBY+id*ESP, listaOrd[i]);
+                objeto(MOX+j*ESP-k, MBY+id*ESP, listaOrd[j]);
+
+                //Subir.
+                for(k = ESP; k > 0; k--)
+                {
+                    setcolor(GREEN);
+                    objeto(MOX+i*ESP, MOY+id*ESP+k, listaOrd[j]);
+                    delay(D);
+                    setcolor(BLACK);
+                    objeto(MOX+i*ESP, MOY+id*ESP+k, listaOrd[j]);
+
+                    setcolor(GREEN);
+                    objeto(MOX+j*ESP, MOY+id*ESP+k, listaOrd[i]);
+                    delay(D);
+                    setcolor(BLACK);
+                    objeto(MOX+j*ESP, MOY+id*ESP+k, listaOrd[i]);
+                }
+
+                setcolor(WHITE);
+                objeto(MOX+i*ESP, MOY+id*ESP+k, listaOrd[j]);
+                objeto(MOX+j*ESP, MOY+id*ESP+k, listaOrd[i]);
+
+                //Para la parte de arreglos.
+                temp = listaOrd[i];
+                listaOrd[i] = listaOrd[i + gap];
+                listaOrd[i + gap] = temp;
+                swapped = true;
             }
+        }
+    //Se sale del bucle cundo termina de ordenar.
+    if (gap == 1 && !swapped)
+        break;
+    }
 
-            setcolor(WHITE);
-            objeto(325+(i-1)*50+k, 200+id*50, listaOrd[(i-1)]);
-            objeto(325+i*50-k, 200+id*50, listaOrd[i]);
+    //Detiene el cronómetro e imprime el tiempo.
+    cronometro = clock() - cronometro;
+    tiempo = ((double)cronometro)/CLOCKS_PER_SEC;
+    sprintf(T, "%0.2f s", tiempo);
+    settextstyle(0, 0, 2);
+    outtextxy(MOX+N*ESP, MOY+id*ESP, T);
+}
 
-            //Para la parte de arreglos.
-            temp = listaOrd[i];
-            listaOrd[i] = listaOrd[i - 1];
-            listaOrd[i - 1] = temp;
-            i--;
+//Compara y ordena elementos alejados entre sí, reduce la lejanía, repetir hasta ordenar todo.
+void shellSort(int id)
+{
+    int i, j, k, m;     //Contadores.
+    int temp;           //Para almacenamiento temporal.
+    int listaOrd[N];    //Para ordenar la lista.
+
+    //Para medir el tiempo de ejecución.
+    clock_t cronometro;
+    double tiempo;
+    char T[8];
+
+    for(i = 0; i < N; i++)
+    {
+        listaOrd[i] = lista[i];
+    }
+
+    cronometro = clock();   //Inicia el cronómetro.
+
+    //Distanciamiento grande, se va reduciendo.
+    for(m = N/2; m > 0 ; m/=2)
+    {
+        //Ordenar lo que está dentro del rango.
+        for(j = m; j < N; j++)
+        {
+            //Buscar la posición correcta para los elementos.
+            for(i = j-m; i >= 0; i-=m)
+            {
+                //Si están en desorden, ordenarlos.
+                if(listaOrd[i+m] >= listaOrd[i])
+                    break;
+                else
+                {
+                    for(k = 0; k < ESP; k++)
+                    {
+                        setcolor(GREEN);
+                        objeto(MOX+i*ESP, MOY+id*ESP+k, listaOrd[i]);
+                        delay(D);
+                        setcolor(BLACK);
+                        objeto(MOX+i*ESP, MOY+id*ESP+k, listaOrd[i]);
+
+                        setcolor(GREEN);
+                        objeto(MOX+(i+m)*ESP, MOY+id*ESP+k, listaOrd[(i+m)]);
+                        delay(D);
+                        setcolor(BLACK);
+                        objeto(MOX+(i+m)*ESP, MOY+id*ESP+k, listaOrd[(i+m)]);
+                    }
+
+                    setcolor(WHITE);
+                    objeto(MOX+i*ESP, MOY+id*ESP+k, listaOrd[i]);
+                    objeto(MOX+(i+m)*ESP, MOY+id*ESP+k, listaOrd[(i+m)]);
+
+                    //Intercambiar.
+                    for(k = 0; k < ((i+m) - i)*ESP; k++)
+                    {
+                        setcolor(GREEN);
+                        objeto(MOX+i*ESP+k, MBY+id*ESP, listaOrd[i]);
+                        objeto(MOX+(i+m)*ESP-k, MBY+id*ESP, listaOrd[(i+m)]);
+                        delay(D);
+                        setcolor(BLACK);
+                        objeto(MOX+i*ESP+k, MBY+id*ESP, listaOrd[i]);
+                        objeto(MOX+(i+m)*ESP-k, MBY+id*ESP, listaOrd[(i+m)]);
+                    }
+
+                    setcolor(WHITE);
+                    objeto(MOX+i*ESP+k, MBY+id*ESP, listaOrd[i]);
+                    objeto(MOX+(i+m)*ESP-k, MBY+id*ESP, listaOrd[(i+m)]);
+
+                    //Subir.
+                    for(k = ESP; k > 0; k--)
+                    {
+                        setcolor(GREEN);
+                        objeto(MOX+i*ESP, MOY+id*ESP+k, listaOrd[(i+m)]);
+                        delay(D);
+                        setcolor(BLACK);
+                        objeto(MOX+i*ESP, MOY+id*ESP+k, listaOrd[(i+m)]);
+
+                        setcolor(GREEN);
+                        objeto(MOX+(i+m)*ESP, MOY+id*ESP+k, listaOrd[i]);
+                        delay(D);
+                        setcolor(BLACK);
+                        objeto(MOX+(i+m)*ESP, MOY+id*ESP+k, listaOrd[i]);
+                    }
+
+                    setcolor(WHITE);
+                    objeto(MOX+i*ESP, MOY+id*ESP+k, listaOrd[(i+m)]);
+                    objeto(MOX+(i+m)*ESP, MOY+id*ESP+k, listaOrd[i]);
+
+                    temp = listaOrd[i];
+                    listaOrd[i] = listaOrd[i+m];
+                    listaOrd[i+m] = temp;
+                }
+            }
         }
     }
 
@@ -520,86 +803,82 @@ void gnomeSort(int id)
     tiempo = ((double)cronometro)/CLOCKS_PER_SEC;
     sprintf(T, "%0.2f s", tiempo);
     settextstyle(0, 0, 2);
-    outtextxy(325+N*50, 200+id*50, T);
+    outtextxy(MOX+N*ESP, MOY+id*ESP, T);
 }
 
-void mergeSort(int id)
+//Crea los gaps para Comb Sort.
+int newGap(int gap)
 {
-    int i,  j;          //Contadores.
-    int temp;           //Para almacenamiento temporal.
-    int listaOrd[N];    //Para ordenar la lista.
-    //Para medir el tiempo de ejecución.
-    clock_t cronometro;
-    double tiempo;
-    char T[8];
-
-    for(i = 0; i < N; i++)
-    {
-        listaOrd[i] = lista[i];
-    }
-
-    cronometro = clock();   //Inicia el cronómetro.
-
-    //ALGORITMO
-
-    //Detiene el cronómetro e imprime el tiempo.
-    cronometro = clock() - cronometro;
-    tiempo = ((double)cronometro)/CLOCKS_PER_SEC;
-    sprintf(T, "%0.2f s", tiempo);
-    settextstyle(0, 0, 2);
-    outtextxy(325+N*50, 200+id*50, T);
-}
-
-void binarythreeSort(int id)
-{
-    int i,  j;          //Contadores.
-    int temp;           //Para almacenamiento temporal.
-    int listaOrd[N];    //Para ordenar la lista.
-    //Para medir el tiempo de ejecución.
-    clock_t cronometro;
-    double tiempo;
-    char T[8];
-
-    for(i = 0; i < N; i++)
-    {
-        listaOrd[i] = lista[i];
-    }
-
-    cronometro = clock();   //Inicia el cronómetro.
-
-    //ALGORITMO
-
-    //Detiene el cronómetro e imprime el tiempo.
-    cronometro = clock() - cronometro;
-    tiempo = ((double)cronometro)/CLOCKS_PER_SEC;
-    sprintf(T, "%0.2f s", tiempo);
-    settextstyle(0, 0, 2);
-    outtextxy(325+N*50, 200+id*50, T);
+    gap = (gap * 10) / 13;
+    if (gap == 9 || gap == 10)
+        gap = 11;
+    if (gap < 1)
+        gap = 1;
+    return gap;
 }
 
 //Ordena dos elementos de la lista en la parte gráfica.
 //Intentar adaptarlo para varios algoritmos complica mucho la vida, ahora cada uno imprime lo suyo.
-/*
-void ordenamiento(int izq, int der, int listaOrd[], int id, int dir)
+/*void ordenamiento(int izq, int der, int listaOrd[], int id, int dir)
 {
     int k;
 
-    for(k = 0; k < (der - izq)*50; k++)
+    //Bajar.
+    for(k = 0; k < ESP; k++)
     {
         setcolor(GREEN);
-        objeto(325+izq*50+k, 200+id*50, listaOrd[izq]);
-        objeto(325+der*50-k, 200+id*50, listaOrd[der]);
+        objeto(MOX+izq*ESP, MOY+id*ESP+k, listaOrd[izq]);
         delay(D);
         setcolor(BLACK);
-        objeto(325+izq*50+k, 200+id*50, listaOrd[izq]);
-        objeto(325+der*50-k, 200+id*50, listaOrd[der]);
+        objeto(MOX+izq*ESP, MOY+id*ESP+k, listaOrd[izq]);
+
+        setcolor(GREEN);
+        objeto(MOX+der*ESP, MOY+id*ESP+k, listaOrd[der]);
+        delay(D);
+        setcolor(BLACK);
+        objeto(MOX+der*ESP, MOY+id*ESP+k, listaOrd[der]);
+        }
+
+        setcolor(WHITE);
+        objeto(MOX+izq*ESP, MOY+id*ESP+k, listaOrd[izq]);
+        objeto(MOX+der*ESP, MOY+id*ESP+k, listaOrd[der]);
+
+    //Intercambiar.
+    for(k = 0; k < (der - izq)*ESP; k++)
+    {
+        setcolor(GREEN);
+        objeto(MOX+izq*ESP+k, MBY+id*ESP, listaOrd[izq]);
+        objeto(MOX+der*ESP-k, MBY+id*ESP, listaOrd[der]);
+        delay(D);
+        setcolor(BLACK);
+        objeto(MOX+izq*ESP+k, MBY+id*ESP, listaOrd[izq]);
+        objeto(MOX+der*ESP-k, MBY+id*ESP, listaOrd[der]);
     }
 
     setcolor(WHITE);
-    objeto(325+izq*50+k, 200+id*50, listaOrd[izq]);
-    objeto(325+der*50-k, 200+id*50, listaOrd[der]);
-}
-*/
+    objeto(MOX+izq*ESP+k, MBY+id*ESP, listaOrd[izq]);
+    objeto(MOX+der*ESP-k, MBY+id*ESP, listaOrd[der]);
+
+    //Subir.
+    for(k = ESP; k > 0; k--)
+    {
+        setcolor(GREEN);
+        objeto(MOX+izq*ESP, MOY+id*ESP+k, listaOrd[der]);
+        delay(D);
+        setcolor(BLACK);
+        objeto(MOX+izq*ESP, MOY+id*ESP+k, listaOrd[der]);
+
+        setcolor(GREEN);
+        objeto(MOX+der*ESP, MOY+id*ESP+k, listaOrd[izq]);
+        delay(D);
+        setcolor(BLACK);
+        objeto(MOX+der*ESP, MOY+id*ESP+k, listaOrd[izq]);
+    }
+
+    setcolor(WHITE);
+    objeto(MOX+izq*ESP, MOY+id*ESP+k, listaOrd[der]);
+    objeto(MOX+der*ESP, MOY+id*ESP+k, listaOrd[izq]);
+}*/
 
 //Crea los objetos de la parte gráfica.
 void objeto(int x, int y, int num)
