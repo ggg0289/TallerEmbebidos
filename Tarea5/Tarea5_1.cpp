@@ -24,7 +24,7 @@ Animación basada en:
 https://c.happycodings.com/beginners-lab-assignments/code91.html
 */
 
-#define D   0           //Para los delays, cuando se necesite visualizar.
+#define D   25         //Para los delays (en ms), cuando se necesite visualizar.
 #define MNX 25          //Margen en x para los nombres.
 #define MNY 100         //Margen en y para los nombres.
 #define MLX MNX+240     //Margen en x para los elementos iniciales.
@@ -33,7 +33,7 @@ https://c.happycodings.com/beginners-lab-assignments/code91.html
 #define MOY MLY+50      //Margen en y para los elementos a ordenar.
 #define MBY MOY+50      //Margen en y para los elementos a ordenar uando bajan.
 #define ESP 50          //Espaciado enre elementos.
-#define INT 50         //Interlineado.
+#define INT 50          //Interlineado.
 
 int N;              //Número de elementos a ordenar.
 int *lista;         //Lista de elementos a ordenar; el puntero se convertirá en un arreglo.
@@ -502,8 +502,8 @@ int newGap(int gap)
 //Toma mensajes de la cola para ordenar en la parte gráfica..
 void *ordenamiento(void *ID)
 {
-    //Descomentar los comandos de mutexE para la versión ordenada pero no paralela.
-    //pthread_mutex_lock(&mutexE);
+    //Descomentar los comandos de mutexE para la versión ordenada pero no paralela, no usar delays.
+    //pthread_mutex_lock(&mutexE);                      //Completa de algoritmo en algoritmo.
 
     int *id = (int *)ID;
 
@@ -511,6 +511,7 @@ void *ordenamiento(void *ID)
 
     while (cola[*id].size() > 0)
     {
+        //pthread_mutex_lock(&mutexE);                  //Completa el n ordenamieto de cada algoritmo.
         pthread_mutex_lock(&mutex[*id]);
 
         struct Parametros param = cola[*id].front();
@@ -519,26 +520,38 @@ void *ordenamiento(void *ID)
         int valIzq = param.valIzq;
         int valDer = param.valDer;
 
+        pthread_mutex_lock(&mutexE);                    //Completa el cambio de color del n ordenamieto de cada algoritmo.
         delay(D);
-        setcolor(RED);
+        setcolor(RED);                                  //Marcar los elementos a ordenar.
         objeto(MOX+inDer*ESP, MLY+(*id)*INT, valIzq);
         objeto(MOX+inIzq*ESP, MLY+(*id)*INT, valDer);
+        pthread_mutex_unlock(&mutexE);
+
+        pthread_mutex_lock(&mutexE);
         delay(D);
-        setcolor(BLACK);
+        setcolor(BLACK);                                //Borrar los elementos a ordenar.
         objeto(MOX+inDer*ESP, MLY+(*id)*INT, valIzq);
         objeto(MOX+inIzq*ESP, MLY+(*id)*INT, valDer);
+        pthread_mutex_unlock(&mutexE);
+
+        pthread_mutex_lock(&mutexE);
         delay(D);
-        setcolor(GREEN);
+        setcolor(GREEN);                                //Imprimir los elementos ordenados.
         objeto(MOX+inDer*ESP, MLY+(*id)*INT, valDer);
         objeto(MOX+inIzq*ESP, MLY+(*id)*INT, valIzq);
+        pthread_mutex_unlock(&mutexE);
+
+        pthread_mutex_lock(&mutexE);
         delay(D);
-        setcolor(WHITE);
+        setcolor(WHITE);                                //Reestablecer el color blanco.
         objeto(MOX+inDer*ESP, MLY+(*id)*INT, valDer);
         objeto(MOX+inIzq*ESP, MLY+(*id)*INT, valIzq);
+        pthread_mutex_unlock(&mutexE);
 
         cola[*id].pop();
 
         pthread_mutex_unlock(&mutex[*id]);
+        //pthread_mutex_unlock(&mutexE);
     }
 
     //Detiene el cronómetro e imprime el tiempo.
